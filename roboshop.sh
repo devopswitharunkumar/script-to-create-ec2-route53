@@ -16,7 +16,7 @@ else
 fi
 }
 
-for i in "${[INSTANCES[@]]}"
+for i in "${INSTANCES[@]}"
 do
     echo "Instance is : $i"
     if [ $i == "mongodb" ] || [ $i == "mysql" ] || [ $i == "shipping" ]
