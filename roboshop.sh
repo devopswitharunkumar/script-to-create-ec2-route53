@@ -1,7 +1,7 @@
 #!/bin/bash
 #Create roboshop Ec2 instance through Shell script
 AMI_ID=ami-0220d79f3f480ecf5
-SG_ID=sg-0f8ec9394c25d8c7a
+SG_ID=sg-0356688fc6f675992
 
 INSTANCES=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "cart" "user" "shipping" "payment" "dispatch" "web")
 HOSTED_ZONE_ID=Z02149386QBAC23T25TA
@@ -23,7 +23,7 @@ do
 then
     INSTANCE_TYPE="t3.small"
 else
-    INSTANCE_TYPE="t2.micro"
+    INSTANCE_TYPE="t3.micro"
     fi
     IP_ADDRESS=$(aws ec2 run-instances --image-id $AMI_ID --instance-type $INSTANCE_TYPE --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{key=Name,Value=$i}]" --query "$VALIDATE" --output text)
 
