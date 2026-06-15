@@ -10,9 +10,9 @@ DOMAIN_NAME=devopswitharun.online
 VALIDATE(){
 if [ $i != "web" ]
 then 
-    echo 'Instance[0].PrivateIpAddress'
+    echo 'Instances[0].PrivateIpAddress'
 else
-    echo 'Instance[0].PublicIpAddress'
+    echo 'Instances[0].PublicIpAddress'
 fi
 }
 
@@ -25,7 +25,7 @@ then
 else
     INSTANCE_TYPE="t3.micro"
 fi
-    IP_ADDRESS=$(aws ec2 run-instances --image-id $AMI_ID --instance-type $INSTANCE_TYPE --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{key=Name,Value=$i}]" --query "$VALIDATE" --output text)
+    IP_ADDRESS=$(aws ec2 run-instances --region us-east-1 --image-id $AMI_ID --instance-type $INSTANCE_TYPE --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{key=Name,Value=$i}]" --query "$(VALIDATE)" --output text)
 
     echo "$i : $IP_ADDRESS"
 
