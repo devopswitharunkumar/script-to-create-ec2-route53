@@ -4,7 +4,7 @@ AMI_ID=ami-0220d79f3f480ecf5
 SG_ID=sg-0356688fc6f675992
 REGION=us-east-1
 
-INSTANCES=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "cart" "user" "shipping" "payment" "dispatch" "web")
+INSTANCES=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "cart" "user" "shipping" "payment" "web")
 HOSTED_ZONE_ID=Z02149386QBAC23T25TA
 DOMAIN_NAME=devopswitharun.online
 
@@ -61,7 +61,7 @@ IP_ADDRESS=$(aws ec2 run-instances --region $REGION --image-id $AMI_ID --instanc
 
 # Validate EC2 creation
 
-if [ -z "$IP_ADDRESS" ]        $-z --> check string is empty
+if [ -z "$IP_ADDRESS" ]        #-z --> check string is empty
 then
 
     echo "ERROR: $i instance creation failed"
