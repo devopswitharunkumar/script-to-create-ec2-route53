@@ -11,9 +11,9 @@ DOMAIN_NAME=devopswitharun.online
 GET_IP(){
 if [ $i != "web" ]
 then 
-    echo 'Instances[0].PrivateIpAddress'
+    echo 'Reservations[0].Instances[0].PrivateIpAddress'
 else
-    echo 'Instances[0].PublicIpAddress'
+    echo 'Reservations[0].Instances[0].PublicIpAddress'
 fi
 }
 
@@ -29,20 +29,20 @@ fi
 
 # Check instance already exists
 
-INSTANCE_ID=$(aws ec2 describe-instances --region $REGION --filters "Name=tag:Name,Values=$i" "Name=instance-state-name,Values=running,pending,stopped" --query "Reservations[*].Instances[*].InstanceId" --output text)
+OLD_INSTANCE_ID=$(aws ec2 describe-instances --region $REGION --filters "Name=tag:Name,Values=$i" "Name=instance-state-name,Values=running,pending,stopped" --query "Reservations[*].Instances[*].InstanceId" --output text)
 
 # If instance exists terminate
 
-if [ -n "$INSTANCE_ID" ]       #if [ -z "$IP_ADDRESS" ] --> -n = check string is NOT empty
+if [ -n "$OLD_INSTANCE_ID" ]       #if [ -z "$OLD_INSTANCE_ID" ] --> -n = check string is NOT empty
 then
 
-    echo "$i instance already exists and Instance ID is : $INSTANCE_ID and Deleting old instance..."
+    echo "$i instance already exists and Instance ID is : $OLD_INSTANCE_ID and Deleting old instance..."
 
-    aws ec2 terminate-instances --region $REGION --instance-ids $INSTANCE_ID
+    aws ec2 terminate-instances --region $REGION --instance-ids $OLD_INSTANCE_ID
 
     echo "Waiting for termination..."
 
-    aws ec2 wait instance-terminated --region $REGION --instance-ids $INSTANCE_ID
+    aws ec2 wait instance-terminated --region $REGION --instance-ids $OLD_INSTANCE_ID
 
     echo "$i old instance deleted"
 else
@@ -55,13 +55,36 @@ echo "Creating new $i instance..."
 
 # Create EC2 instance
 
-IP_ADDRESS=$(aws ec2 run-instances --region $REGION --image-id $AMI_ID --instance-type $INSTANCE_TYPE --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]" --query "$(GET_IP)" --output text)
+INSTANCE_ID=$(aws ec2 run-instances --region $REGION --image-id $AMI_ID --instance-type $INSTANCE_TYPE --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]" --query "Instances[0].InstanceId" --output text)
+# Validate instance creation
+
+if [ -z "$INSTANCE_ID" ] || [ "$INSTANCE_ID" == "None" ]
+then
+
+    echo "ERROR: $i instance creation failed"
+    continue
+
+fi
 
 
 
-# Validate EC2 creation
+echo "$i Instance ID: $INSTANCE_ID"
 
-if [ -z "$IP_ADDRESS" ]        #-z --> check string is empty
+# Wait until running
+
+echo "Waiting for $i instance running..."
+
+aws ec2 wait instance-running --region $REGION --instance-ids $INSTANCE_ID
+
+# Fetch IP address
+
+IP_ADDRESS=$(aws ec2 describe-instances --region $REGION --instance-ids $INSTANCE_ID --query "$(GET_IP)" --output text)
+
+
+
+# Validate IP
+
+if [ -z "$IP_ADDRESS" ] || [ "$IP_ADDRESS" == "None" ]       #-z --> check string is empty
 then
 
     echo "ERROR: $i instance creation failed"
