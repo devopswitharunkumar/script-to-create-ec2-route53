@@ -143,7 +143,7 @@
 AMI_ID=ami-0220d79f3f480ecf5
 SG_ID=sg-0356688fc6f675992
 
-INSTANCES=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "cart" "user" "shipping" "payment" "dispatch" "web")
+INSTANCES=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "cart" "user" "shipping" "payment" "web")
 HOSTED_ZONE_ID=Z02149386QBAC23T25TA
 DOMAIN_NAME=devopswitharun.online
 
