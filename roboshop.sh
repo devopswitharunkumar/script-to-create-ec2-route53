@@ -136,7 +136,7 @@
 
 
 
-Create Ec2 and route53 All Roboshop instance throuh shell script 
+#Create Ec2 and route53 All Roboshop instance throuh shell script 
 
 #!/bin/bash
 #Create roboshop Ec2 instance through Shell script
