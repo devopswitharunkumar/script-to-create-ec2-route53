@@ -141,20 +141,20 @@
 #!/bin/bash
 #Create roboshop Ec2 instance through Shell script
 AMI_ID=ami-0220d79f3f480ecf5
-SG_ID=sg-0356688fc6f675992
+SG_ID=sg-09db3c4d3f88de20c                  #sg-0356688fc6f675992
 
 INSTANCES=("mongodb" "redis" "mysql" "rabbitmq" "catalogue" "cart" "user" "shipping" "payment" "web")
-HOSTED_ZONE_ID=Z02149386QBAC23T25TA
+HOSTED_ZONE_ID=Z0516007JRL64LEMLTMX         #Z02149386QBAC23T25TA
 DOMAIN_NAME=devopswitharun.online
 
-VALIDATE(){
-if [ $i != "web" ]
-then 
-    echo 'Instances[0].PrivateIpAddress'
-else
-    echo 'Instances[0].PublicIpAddress'
-fi
-}
+# VALIDATE(){
+# if [ $i != "web" ]
+# then 
+#     echo 'Instances[0].PrivateIpAddress'
+# else
+#     echo 'Instances[0].PublicIpAddress'
+# fi
+# }
 
 for i in "${INSTANCES[@]}"
 do
@@ -165,7 +165,7 @@ then
 else
     INSTANCE_TYPE="t3.micro"
 fi
-    IP_ADDRESS=$(aws ec2 run-instances --region us-east-1 --image-id $AMI_ID --instance-type $INSTANCE_TYPE --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]" --query "$(VALIDATE)" --output text)
+    IP_ADDRESS=$(aws ec2 run-instances --region us-east-1 --image-id $AMI_ID --instance-type $INSTANCE_TYPE --security-group-ids $SG_ID --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$i}]" --query 'Instances[0].PrivateIpAddress' --output text)
 
     echo "$i : $IP_ADDRESS"
 
